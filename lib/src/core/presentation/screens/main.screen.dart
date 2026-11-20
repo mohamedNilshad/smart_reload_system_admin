@@ -16,19 +16,21 @@ class MainScreen extends StatefulWidget {
   State<MainScreen> createState() => _MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, WindowListener {
+class _MainScreenState extends State<MainScreen>
+    with WidgetsBindingObserver, WindowListener {
   int currentIndex = 0;
   int currentSubMenuIndex = 0;
   bool isOrganizationExpanded = false;
 
-
   List<Widget> screens = [
-    const TempScreen(title: "Dashboard"),//report
-    const TempScreen(title: "Manage"),//manage(Service providers, packages, commission percentage, vendors and clients.)
-    const TempScreen(title: "Wallet"),//wallet
-    const TempScreen(title: "System"),//system
-    const TempScreen(title: "Notification"),//notification
-    const TempScreen(title: "Profile"),//profile
+    const TempScreen(title: "Dashboard"), //report
+    const TempScreen(
+      title: "Manage",
+    ), //manage(Service providers, packages, commission percentage, vendors and clients.)
+    const TempScreen(title: "Wallet"), //wallet
+    const TempScreen(title: "System"), //system
+    const TempScreen(title: "Notification"), //notification
+    const TempScreen(title: "Profile"), //profile
   ];
 
   List<Widget> orgScreens = [
@@ -63,7 +65,6 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, Wi
     "Users",
   ];
 
-
   @override
   void initState() {
     windowManager.addListener(this);
@@ -72,52 +73,53 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, Wi
     super.initState();
   }
 
-
-
   @override
   void onWindowClose() async {
-
-
     bool isPreventClose = await windowManager.isPreventClose();
     bool isLogouting = false;
     if (isPreventClose && mounted) {
-      bool shouldClose = await showDialog(
-        context: context,
-        builder: (context) {
-          return BlocListener<AuthBloc, AuthState>(
-            listener: (context, state) {
-              if (state is AuthLoading) {
-                setState(() => isLogouting = true);
-              } else{
-                setState(() => isLogouting = false);
-              }
+      bool shouldClose =
+          await showDialog(
+            context: context,
+            builder: (context) {
+              return BlocListener<AuthBloc, AuthState>(
+                listener: (context, state) {
+                  if (state is AuthLoading) {
+                    if (mounted) setState(() => isLogouting = true);
+                  } else {
+                    if (mounted) setState(() => isLogouting = false);
+                  }
+                },
+                child: AlertDialog(
+                  title: const Text("Confirm Exit"),
+                  content: const Text(
+                    "Are you sure you want to Logout and Close the app?",
+                  ),
+                  actions: [
+                    TextButton(
+                      child: const Text("Cancel"),
+                      onPressed: () => Navigator.of(context).pop(false),
+                    ),
+                    ElevatedButton(
+                      child: isLogouting
+                          ? CCircularProgressIndicator(radius: 12.0)
+                          : const Text("Logout"),
+                      onPressed: () {
+                        // context.read<AuthBloc>().add(AuthLogoutEvent(context: context, isClose: true));
+                      },
+                    ),
+                  ],
+                ),
+              );
             },
-            child: AlertDialog(
-              title: const Text("Confirm Exit"),
-              content: const Text("Are you sure you want to Logout and Close the app?"),
-              actions: [
-                TextButton(
-                  child: const Text("Cancel"),
-                  onPressed: () => Navigator.of(context).pop(false),
-                ),
-                ElevatedButton(
-                  child: isLogouting ? CCircularProgressIndicator(radius: 12.0,): const Text("Logout"),
-                  onPressed: () {
-                    // context.read<AuthBloc>().add(AuthLogoutEvent(context: context, isClose: true));
-                  },
-                ),
-              ],
-            ),
-          );
-        },
-      ) ?? false;
+          ) ??
+          false;
 
       if (shouldClose) {
         await windowManager.destroy();
       }
     }
   }
-
 
   @override
   void dispose() {
@@ -134,7 +136,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, Wi
       body: Row(
         children: [
           Container(
-            width: screenWidth / 7.5,
+            width: (screenWidth * 0.18).clamp(180.0, 280.0),
             color: isDark ? AppColors.shadowColor : AppColors.grey,
             child: Column(
               children: [
@@ -148,9 +150,13 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, Wi
                 Divider(),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: titles.length + (isOrganizationExpanded ? organizationSubmenu.length : 0),
+                    itemCount:
+                        titles.length +
+                        (isOrganizationExpanded
+                            ? organizationSubmenu.length
+                            : 0),
                     itemBuilder: (context, index) {
-                      if (index == 5) {
+                      if (index == 1) {
                         return ListTile(
                           leading: Icon(icons[index]),
                           title: Text(
@@ -158,17 +164,28 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, Wi
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
-                          selected: isOrganizationExpanded,//index == currentIndex,
+                          selected:
+                              isOrganizationExpanded || index == currentIndex,
                           selectedTileColor: AppColors.primary,
-                          titleTextStyle: Theme.of(context).textTheme.titleSmall,
+                          titleTextStyle: Theme.of(
+                            context,
+                          ).textTheme.titleSmall,
                           onTap: () {
-                            setState(() => isOrganizationExpanded = !isOrganizationExpanded);
+                            setState(() {
+                              isOrganizationExpanded = !isOrganizationExpanded;
+                              if (isOrganizationExpanded) currentIndex = index;
+                            });
                           },
-                          trailing: Icon(isOrganizationExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down),
+                          trailing: Icon(
+                            isOrganizationExpanded
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                          ),
                         );
-                      } else if (index > 5 && index < 5 + organizationSubmenu.length + 1 && isOrganizationExpanded) {
-
-                        final submenuIndex = index - 6;
+                      } else if (index > 1 &&
+                          index < 2 + organizationSubmenu.length &&
+                          isOrganizationExpanded) {
+                        final submenuIndex = index - 2;
                         return Padding(
                           padding: const EdgeInsets.only(left: 10.0),
                           child: ListTile(
@@ -177,18 +194,25 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, Wi
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
-                            titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                            titleTextStyle: Theme.of(
+                              context,
+                            ).textTheme.bodySmall,
                             selected: submenuIndex == currentSubMenuIndex,
                             selectedTileColor: AppColors.secondary,
                             onTap: () {
-                              debugPrint("Tapped on ${organizationSubmenu[submenuIndex]}");
-                              setState(() => currentSubMenuIndex = submenuIndex);
+                              debugPrint(
+                                "Tapped on ${organizationSubmenu[submenuIndex]}",
+                              );
+                              setState(() {
+                                currentSubMenuIndex = submenuIndex;
+                                currentIndex = 1;
+                              });
                             },
                           ),
                         );
                       } else {
                         int adjustedIndex = index;
-                        if(index > 5 && isOrganizationExpanded) {
+                        if (index > 1 && isOrganizationExpanded) {
                           adjustedIndex = index - organizationSubmenu.length;
                         }
                         return ListTile(
@@ -198,12 +222,16 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, Wi
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
-                          selected: adjustedIndex == currentIndex && !isOrganizationExpanded,
+                          selected:
+                              adjustedIndex == currentIndex &&
+                              !isOrganizationExpanded,
                           selectedTileColor: AppColors.primary,
-                          titleTextStyle: Theme.of(context).textTheme.titleSmall,
+                          titleTextStyle: Theme.of(
+                            context,
+                          ).textTheme.titleSmall,
                           onTap: () {
                             setState(() {
-                              if(index != 5 )isOrganizationExpanded = false;
+                              isOrganizationExpanded = false;
                               currentIndex = adjustedIndex;
                             });
                           },
@@ -218,7 +246,9 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver, Wi
           // Content Area
           Expanded(
             child: Container(
-              child: isOrganizationExpanded ? orgScreens[currentSubMenuIndex]: screens[currentIndex],
+              child: isOrganizationExpanded
+                  ? orgScreens[currentSubMenuIndex]
+                  : screens[currentIndex],
             ),
           ),
         ],

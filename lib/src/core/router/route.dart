@@ -1,8 +1,11 @@
 
 import 'package:flutter/material.dart';
+import 'package:smart_reload_system_admin/src/core/presentation/screens/main.screen.dart';
 import 'package:smart_reload_system_admin/src/core/presentation/screens/splash.screen.dart';
 import 'package:smart_reload_system_admin/src/core/presentation/screens/unknown.screen.dart';
 import 'package:smart_reload_system_admin/src/core/router/route.constants.dart';
+import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/login.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/verify_email.screen.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -12,6 +15,24 @@ class AppRouter {
         return MaterialPageRoute(
           settings: const RouteSettings(name: RouteConstants.splashScreen),
           builder: (context) => const SplashScreen(),
+        );
+
+      case RouteConstants.loginScreen:
+        return MaterialPageRoute(
+          settings: const RouteSettings(name: RouteConstants.loginScreen),
+          builder: (context) => const LoginScreen(),
+        );
+
+      case RouteConstants.forgotPasswordScreen:
+        return MaterialPageRoute(
+          settings: const RouteSettings(name: RouteConstants.forgotPasswordScreen),
+          builder: (context) => const ForgotPasswordScreen(),
+        );
+
+      case RouteConstants.mainScreen:
+        return MaterialPageRoute(
+          settings: const RouteSettings(name: RouteConstants.mainScreen),
+          builder: (context) => const MainScreen(),
         );
 
 

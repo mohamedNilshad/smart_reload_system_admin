@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:smart_reload_system_admin/src/core/constants/constant.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/data/datasource/auth.local_datasource.dart';
@@ -15,6 +16,7 @@ import 'package:smart_reload_system_admin/src/feature/auth/domain/usecase/logout
 import 'package:smart_reload_system_admin/src/feature/auth/domain/usecase/reauthenticate.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/domain/usecase/update_cached_user.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/domain/usecase/update_user_realtime.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/auth/domain/usecase/verify_email.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/domain/usecase/watch_user_realtime.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/session.cubit.dart';
@@ -29,7 +31,7 @@ Future<void> init() async {
         () => FirebaseDatabase.instanceFor(app: Firebase.app(), databaseURL: dbURL),
   );
 
-  // sl.registerLazySingleton(() => const FlutterSecureStorage());
+  sl.registerLazySingleton(() => const FlutterSecureStorage());
   // sl.registerLazySingleton(() => NotificationService());
 
 
@@ -54,6 +56,7 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ClearCachedUserUseCase(sl()));
   sl.registerLazySingleton(() => ReauthenticateUseCase(sl()));
   sl.registerLazySingleton(() => LogoutUseCase(sl()));
+  sl.registerLazySingleton(() => VerifyEmailUseCase(sl()));
 
   /// Bloc
   sl.registerLazySingleton(() => AuthBloc(
