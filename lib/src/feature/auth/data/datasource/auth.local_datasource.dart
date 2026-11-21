@@ -20,7 +20,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     try{
       await secureStorage.write(key: _key, value: jsonEncode(user.toJson()));
     } catch (e, st) {
-      ErrorLogger.log(
+      errorLog(
         e,
         location: 'AuthLocalDataSourceImpl.cacheUser',
         stackTrace: st,
@@ -36,7 +36,7 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
     try {
       return UserEntity.fromJson(jsonDecode(jsonStr) as Map<String, dynamic>);
     } catch (e, st) {
-      ErrorLogger.log(
+      errorLog(
         e,
         location: 'AuthLocalDataSourceImpl.getCachedUser',
         stackTrace: st,
@@ -49,8 +49,8 @@ class AuthLocalDataSourceImpl implements AuthLocalDataSource {
   Future<void> clearCachedUser() async {
     try{
       await secureStorage.delete(key: _key);
-    }catch(e, st) {
-      ErrorLogger.log(
+    } catch (e, st) {
+      errorLog(
         e,
         location: 'AuthLocalDataSourceImpl.clearCachedUser',
         stackTrace: st,

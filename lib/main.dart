@@ -44,7 +44,7 @@ void main() {
 
     runApp(App(theme: ThemeMode.dark));
   }, (e, st) =>
-      ErrorLogger.log(
+      errorLog(
         e,
         location: 'Main.main method',
         stackTrace: st,
