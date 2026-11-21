@@ -12,8 +12,8 @@ import 'package:smart_reload_system_admin/src/feature/notification/presentation/
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/bloc/profile.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/bloc/package.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/user/presentation/bloc/user.bloc.dart';
 import 'package:smart_reload_system_admin/src/injection_container.dart';
-
 
 class App extends StatelessWidget {
   final ThemeMode theme;
@@ -29,7 +29,7 @@ class App extends StatelessWidget {
         BlocProvider(create: (_) => sl<NotificationBloc>()),
         BlocProvider(create: (_) => sl<NewsBloc>()),
         BlocProvider(create: (_) => sl<PackageBloc>()),
-
+        BlocProvider(create: (_) => sl<UserBloc>()),
       ],
       child: MaterialApp(
         builder: (context, child) => NoInternetBanner(child: child!),

@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/notification/presentation/screens/notifications.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/screens/profile.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/screen/packages.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/user/presentation/screen/users.screen.dart';
 import 'package:window_manager/window_manager.dart';
 
 class MainScreen extends StatefulWidget {
@@ -31,19 +32,16 @@ class _MainScreenState extends State<MainScreen>
 
   List<Widget> screens = [
     const TempScreen(title: "Dashboard"), //report
-    const TempScreen(title: "Manage"), //manage(Service providers, packages, commission percentage, vendors and clients.)
+    const TempScreen(
+      title: "Manage",
+    ), //manage(Service providers, packages, commission percentage, vendors and clients.)
     const TempScreen(title: "Wallet"), //wallet
     SystemScreen(),
     NotificationScreen(),
     ProfileScreen(),
   ];
 
-  List<Widget> orgScreens = [
-    const TempScreen(title: "Service providers"),
-    const PackagesScreen(),
-    const TempScreen(title: "Commission"),
-    const TempScreen(title: "Users"),
-  ];
+  List<Widget> orgScreens = [const PackagesScreen(), const UsersScreen()];
 
   final List<String> titles = [
     "Dashboard",
@@ -63,12 +61,7 @@ class _MainScreenState extends State<MainScreen>
     Icons.person_outline_rounded,
   ];
 
-  final List<String> manageSubmenu = [
-    "Service providers",
-    "Packages",
-    "Commission",
-    "Users",
-  ];
+  final List<String> manageSubmenu = ["Packages", "Users"];
 
   @override
   void initState() {
@@ -90,15 +83,19 @@ class _MainScreenState extends State<MainScreen>
               return BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthLoading) {
-                    if (mounted) setState(() => isLogoutLoading = state.isLogout);
+                    if (mounted)
+                      setState(() => isLogoutLoading = state.isLogout);
                   }
 
-                  if(state is AuthLogoutSuccess) {
+                  if (state is AuthLogoutSuccess) {
                     if (mounted) setState(() => isLogoutLoading = false);
-                    Navigator.of(context).pushNamedAndRemoveUntil(RouteConstants.loginScreen, (route) => false);
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      RouteConstants.loginScreen,
+                      (route) => false,
+                    );
                   }
 
-                  if(state is AuthFailureState) {
+                  if (state is AuthFailureState) {
                     if (mounted) setState(() => isLogoutLoading = false);
                     AppSnackbar.showError(context, state.message);
                   }
@@ -114,8 +111,9 @@ class _MainScreenState extends State<MainScreen>
                     CElevatedButton(
                       isLoading: isLogoutLoading,
                       width: 100,
-                      label:"Logout",
-                      onPressed: () => context.read<AuthBloc>().add(LogoutRequested()),
+                      label: "Logout",
+                      onPressed: () =>
+                          context.read<AuthBloc>().add(LogoutRequested()),
                     ),
                   ],
                 ),
@@ -206,7 +204,9 @@ class _MainScreenState extends State<MainScreen>
                 Divider(),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: titles.length + (isManageExpanded ? manageSubmenu.length : 0),
+                    itemCount:
+                        titles.length +
+                        (isManageExpanded ? manageSubmenu.length : 0),
                     itemBuilder: (context, index) {
                       if (index == 1) {
                         return ListTile(
@@ -218,7 +218,9 @@ class _MainScreenState extends State<MainScreen>
                           ),
                           selected: isManageExpanded || index == currentIndex,
                           selectedTileColor: AppColors.primary,
-                          titleTextStyle: Theme.of(context).textTheme.titleSmall,
+                          titleTextStyle: Theme.of(
+                            context,
+                          ).textTheme.titleSmall,
                           onTap: () {
                             setState(() {
                               isManageExpanded = !isManageExpanded;
@@ -226,10 +228,14 @@ class _MainScreenState extends State<MainScreen>
                             });
                           },
                           trailing: Icon(
-                            isManageExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right_rounded,
+                            isManageExpanded
+                                ? Icons.keyboard_arrow_down
+                                : Icons.keyboard_arrow_right_rounded,
                           ),
                         );
-                      } else if (index > 1 && index < 2 + manageSubmenu.length && isManageExpanded) {
+                      } else if (index > 1 &&
+                          index < 2 + manageSubmenu.length &&
+                          isManageExpanded) {
                         final submenuIndex = index - 2;
                         return Padding(
                           padding: const EdgeInsets.only(left: 10.0),
@@ -239,11 +245,15 @@ class _MainScreenState extends State<MainScreen>
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
-                            titleTextStyle: Theme.of(context).textTheme.bodySmall,
+                            titleTextStyle: Theme.of(
+                              context,
+                            ).textTheme.bodySmall,
                             selected: submenuIndex == currentSubMenuIndex,
                             selectedTileColor: AppColors.purple,
                             onTap: () {
-                              debugPrint("Tapped on ${manageSubmenu[submenuIndex]}");
+                              debugPrint(
+                                "Tapped on ${manageSubmenu[submenuIndex]}",
+                              );
                               setState(() {
                                 currentSubMenuIndex = submenuIndex;
                                 currentIndex = 1;
@@ -284,11 +294,14 @@ class _MainScreenState extends State<MainScreen>
                 Padding(
                   padding: const EdgeInsets.all(Sizes.md),
                   child: ListTile(
-                    leading: const Icon(Icons.logout_rounded, color: Colors.red),
-                    title: const Text("Logout"),
-                    titleTextStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    leading: const Icon(
+                      Icons.logout_rounded,
                       color: Colors.red,
                     ),
+                    title: const Text("Logout"),
+                    titleTextStyle: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(color: Colors.red),
                     onTap: _showLogoutDialog,
                   ),
                 ),

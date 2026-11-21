@@ -50,6 +50,14 @@ import 'package:smart_reload_system_admin/src/feature/package/domain/usecase/del
 import 'package:smart_reload_system_admin/src/feature/package/domain/usecase/get_packages.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/package/domain/usecase/update_package.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/bloc/package.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/user/data/datasource/user.remote_datasource.dart';
+import 'package:smart_reload_system_admin/src/feature/user/data/repository/user.repo_impl.dart';
+import 'package:smart_reload_system_admin/src/feature/user/domain/repository/user.repo.dart';
+import 'package:smart_reload_system_admin/src/feature/user/domain/usecase/add_user.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/user/domain/usecase/delete_user.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/user/domain/usecase/get_users.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/user/domain/usecase/update_user.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/user/presentation/bloc/user.bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -58,22 +66,37 @@ Future<void> init() async {
   sl.registerLazySingleton(() => fb.FirebaseAuth.instance);
   sl.registerLazySingleton(() => FirebaseFirestore.instance);
   sl.registerLazySingleton<FirebaseDatabase>(
-        () => FirebaseDatabase.instanceFor(app: Firebase.app(), databaseURL: dbURL),
+    () => FirebaseDatabase.instanceFor(app: Firebase.app(), databaseURL: dbURL),
   );
 
   sl.registerLazySingleton(() => const FlutterSecureStorage());
 
-
   /// Data source
   sl.registerLazySingleton<AuthRemoteDataSource>(
-        () => AuthRemoteDataSourceImpl(firebaseAuth: sl(), firestore: sl(), database: sl()),
+    () => AuthRemoteDataSourceImpl(
+      firebaseAuth: sl(),
+      firestore: sl(),
+      database: sl(),
+    ),
   );
-  sl.registerLazySingleton<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(sl()));
-  sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(firebaseAuth: sl(), firestore: sl()));
-  sl.registerLazySingleton<SystemRemoteDataSource>(() => SystemRemoteDataSourceImpl(sl()));
-  sl.registerLazySingleton<PackageRemoteDataSource>(() => PackageRemoteDataSourceImpl(sl()));
-
+  sl.registerLazySingleton<AuthLocalDataSource>(
+    () => AuthLocalDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(firebaseAuth: sl(), firestore: sl()),
+  );
+  sl.registerLazySingleton<SystemRemoteDataSource>(
+    () => SystemRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<PackageRemoteDataSource>(
+    () => PackageRemoteDataSourceImpl(sl()),
+  );
+  sl.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImpl(sl()),
+  );
 
   /// Repository
   sl.registerLazySingleton<AuthRepo>(
@@ -85,6 +108,7 @@ Future<void> init() async {
   sl.registerLazySingleton<NotificationRepo>(() => NotificationRepoImpl(sl()));
   sl.registerLazySingleton<SystemRepo>(() => SystemRepoImpl(sl()));
   sl.registerLazySingleton<PackageRepo>(() => PackageRepoImpl(sl()));
+  sl.registerLazySingleton<UserRepo>(() => UserRepoImpl(sl()));
 
   /// Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -113,9 +137,14 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddPackageUseCase(sl()));
   sl.registerLazySingleton(() => UpdatePackageUseCase(sl()));
   sl.registerLazySingleton(() => DeletePackageUseCase(sl()));
+  sl.registerLazySingleton(() => GetUsersUseCase(sl()));
+  sl.registerLazySingleton(() => AddUserUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateUserUseCase(sl()));
+  sl.registerLazySingleton(() => DeleteUserUseCase(sl()));
 
   /// Bloc
-  sl.registerLazySingleton(() => AuthBloc(
+  sl.registerLazySingleton(
+    () => AuthBloc(
       loginUseCase: sl(),
       logoutUseCase: sl(),
       reauthenticateUseCase: sl(),
@@ -123,7 +152,8 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerLazySingleton(() => SessionCubit(
+  sl.registerLazySingleton(
+    () => SessionCubit(
       watchUserRealtimeUseCase: sl(),
       getCachedUserUseCase: sl(),
       firebaseAuth: sl(),
@@ -133,28 +163,39 @@ Future<void> init() async {
     ),
   );
 
-  sl.registerLazySingleton(() => ProfileBloc(
-      updatePasswordUseCase: sl(),
-      updateProfileUseCase: sl(),
-    ),
+  sl.registerLazySingleton(
+    () => ProfileBloc(updatePasswordUseCase: sl(), updateProfileUseCase: sl()),
   );
 
-  sl.registerLazySingleton(() => NotificationBloc(
+  sl.registerLazySingleton(
+    () => NotificationBloc(
       getNotificationsUseCase: sl(),
       markAsReadUseCase: sl(),
       markAllAsReadUseCase: sl(),
     ),
   );
-  sl.registerLazySingleton(() => NewsBloc(
-    addNewNewsUseCase: sl(),
-    getNewsListUseCase: sl(),
-    updateNewsUseCase: sl(),
-    deleteNewsUseCase: sl(),
-  ));
-  sl.registerLazySingleton(() => PackageBloc(
-    getPackagesUseCase: sl(),
-    addPackageUseCase: sl(),
-    updatePackageUseCase: sl(),
-    deletePackageUseCase: sl(),
-  ));
+  sl.registerLazySingleton(
+    () => NewsBloc(
+      addNewNewsUseCase: sl(),
+      getNewsListUseCase: sl(),
+      updateNewsUseCase: sl(),
+      deleteNewsUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => PackageBloc(
+      getPackagesUseCase: sl(),
+      addPackageUseCase: sl(),
+      updatePackageUseCase: sl(),
+      deletePackageUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => UserBloc(
+      getUsersUseCase: sl(),
+      addUserUseCase: sl(),
+      updateUserUseCase: sl(),
+      deleteUserUseCase: sl(),
+    ),
+  );
 }
