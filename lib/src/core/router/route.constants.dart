@@ -10,5 +10,7 @@ class RouteConstants {
   static const String packagesScreen = "PackagesScreen";
   static const String settingsScreen = "SettingsScreen";
   static const String mainScreen = "MainScreen";
+  static const String newBankInfoScreen = "NewBankInfoScreen";
+  static const String bankInfoScreen = "BankInfoScreen";
 
 }

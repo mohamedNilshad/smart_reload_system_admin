@@ -13,6 +13,9 @@ import 'package:smart_reload_system_admin/src/feature/profile/presentation/bloc/
 import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/bloc/package.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/user/presentation/bloc/user.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/bloc/bank/bank.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/bloc/com_history/com_history.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/bloc/wallet/wallet.bloc.dart';
 import 'package:smart_reload_system_admin/src/injection_container.dart';
 
 class App extends StatelessWidget {
@@ -30,6 +33,9 @@ class App extends StatelessWidget {
         BlocProvider(create: (_) => sl<NewsBloc>()),
         BlocProvider(create: (_) => sl<PackageBloc>()),
         BlocProvider(create: (_) => sl<UserBloc>()),
+        BlocProvider(create: (_) => sl<WalletBloc>()),
+        BlocProvider(create: (_) => sl<ComHistoryBloc>()),
+        BlocProvider(create: (_) => sl<BankBloc>()),
       ],
       child: MaterialApp(
         builder: (context, child) => NoInternetBanner(child: child!),

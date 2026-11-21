@@ -8,6 +8,8 @@ import 'package:smart_reload_system_admin/src/feature/System/presentation/screen
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/login.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/forgot_password.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/screen/packages.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/screens/bank_info.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/screens/new_bank_info.screen.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -47,6 +49,16 @@ class AppRouter {
         return MaterialPageRoute(
           settings: const RouteSettings(name: RouteConstants.newsBannerScreen),
           builder: (context) => const NewsBannerScreen(),
+        );
+      case RouteConstants.newBankInfoScreen:
+        return MaterialPageRoute(
+          settings: const RouteSettings(name: RouteConstants.newBankInfoScreen),
+          builder: (context) => const NewBankInfoScreen(),
+        );
+      case RouteConstants.bankInfoScreen:
+        return MaterialPageRoute(
+          settings: const RouteSettings(name: RouteConstants.bankInfoScreen),
+          builder: (context) => const BankInfoScreen(),
         );
 
       // case RouteConstants.commissionScreen:

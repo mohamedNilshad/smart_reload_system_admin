@@ -58,6 +58,18 @@ import 'package:smart_reload_system_admin/src/feature/user/domain/usecase/delete
 import 'package:smart_reload_system_admin/src/feature/user/domain/usecase/get_users.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/user/domain/usecase/update_user.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/user/presentation/bloc/user.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/data/datasource/wallet.remote_datasource.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/data/repository/wallet.repo_impl.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/domain/repository/wallet.repo.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/domain/usecase/add_com_withdrawal.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/domain/usecase/get_bank_info.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/domain/usecase/get_com_withdrew_history.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/domain/usecase/get_wallet_summary.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/domain/usecase/new_bank_info.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/domain/usecase/remove_bank_info.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/bloc/bank/bank.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/bloc/com_history/com_history.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/bloc/wallet/wallet.bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -97,6 +109,9 @@ Future<void> init() async {
   sl.registerLazySingleton<UserRemoteDataSource>(
     () => UserRemoteDataSourceImpl(sl()),
   );
+  sl.registerLazySingleton<WalletRemoteDataSource>(
+    () => WalletRemoteDataSourceImpl(firestore: sl(), firebaseAuth: sl()),
+  );
 
   /// Repository
   sl.registerLazySingleton<AuthRepo>(
@@ -108,6 +123,7 @@ Future<void> init() async {
   sl.registerLazySingleton<NotificationRepo>(() => NotificationRepoImpl(sl()));
   sl.registerLazySingleton<SystemRepo>(() => SystemRepoImpl(sl()));
   sl.registerLazySingleton<PackageRepo>(() => PackageRepoImpl(sl()));
+  sl.registerLazySingleton<WalletRepo>(() => WalletRepoImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<UserRepo>(() => UserRepoImpl(sl()));
 
   /// Use cases
@@ -141,6 +157,13 @@ Future<void> init() async {
   sl.registerLazySingleton(() => AddUserUseCase(sl()));
   sl.registerLazySingleton(() => UpdateUserUseCase(sl()));
   sl.registerLazySingleton(() => DeleteUserUseCase(sl()));
+
+  sl.registerLazySingleton(() => AddComWithdrawalUseCase(sl()));
+  sl.registerLazySingleton(() => GetComWithdrawHistoryUseCase(sl()));
+  sl.registerLazySingleton(() => GetWalletSummaryUseCase(sl()));
+  sl.registerLazySingleton(() => GetBankInfoUseCase(sl()));
+  sl.registerLazySingleton(() => NewBankInfoUseCase(sl()));
+  sl.registerLazySingleton(() => RemoveBankInfoUseCase(sl()));
 
   /// Bloc
   sl.registerLazySingleton(
@@ -198,4 +221,19 @@ Future<void> init() async {
       deleteUserUseCase: sl(),
     ),
   );
+  sl.registerLazySingleton(
+    () => WalletBloc(
+      getWalletSummaryUseCase: sl(),
+      addWithdrawalUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(
+    () => BankBloc(
+      removeBankInfoUseCase: sl(),
+      getVendorBankInfoUseCase: sl(),
+      newBankInfoUseCase: sl(),
+    ),
+  );
+  sl.registerLazySingleton(() => ComHistoryBloc(getHistoryUseCase: sl()));
+
 }

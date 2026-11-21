@@ -15,6 +15,7 @@ import 'package:smart_reload_system_admin/src/feature/notification/presentation/
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/screens/profile.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/screen/packages.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/user/presentation/screen/users.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/wallet/presentation/screens/wallet.screen.dart';
 import 'package:window_manager/window_manager.dart';
 
 class MainScreen extends StatefulWidget {
@@ -35,7 +36,7 @@ class _MainScreenState extends State<MainScreen>
     const TempScreen(
       title: "Manage",
     ), //manage(Service providers, packages, commission percentage, vendors and clients.)
-    const TempScreen(title: "Wallet"), //wallet
+    WalletScreen(),
     SystemScreen(),
     NotificationScreen(),
     ProfileScreen(),
@@ -83,8 +84,9 @@ class _MainScreenState extends State<MainScreen>
               return BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthLoading) {
-                    if (mounted)
+                    if (mounted) {
                       setState(() => isLogoutLoading = state.isLogout);
+                    }
                   }
 
                   if (state is AuthLogoutSuccess) {
