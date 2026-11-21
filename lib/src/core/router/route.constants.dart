@@ -7,6 +7,7 @@ class RouteConstants {
   static const String forgotPasswordScreen = "ForgotPasswordScreen";
   static const String newsBannerScreen = "NewsBannerScreen";
   static const String commissionScreen = "CommissionScreen";
+  static const String packagesScreen = "PackagesScreen";
   static const String settingsScreen = "SettingsScreen";
   static const String mainScreen = "MainScreen";
 

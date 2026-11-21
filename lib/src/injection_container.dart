@@ -42,6 +42,14 @@ import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/dele
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/get_news_list.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/update_news.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/package/data/datasource/package.remote_datasource.dart';
+import 'package:smart_reload_system_admin/src/feature/package/data/repository/package.repo_impl.dart';
+import 'package:smart_reload_system_admin/src/feature/package/domain/repository/package.repo.dart';
+import 'package:smart_reload_system_admin/src/feature/package/domain/usecase/add_package.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/package/domain/usecase/delete_package.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/package/domain/usecase/get_packages.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/package/domain/usecase/update_package.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/package/presentation/bloc/package.bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -64,6 +72,7 @@ Future<void> init() async {
   sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(firebaseAuth: sl(), firestore: sl()));
   sl.registerLazySingleton<SystemRemoteDataSource>(() => SystemRemoteDataSourceImpl(sl()));
+  sl.registerLazySingleton<PackageRemoteDataSource>(() => PackageRemoteDataSourceImpl(sl()));
 
 
   /// Repository
@@ -75,6 +84,7 @@ Future<void> init() async {
   );
   sl.registerLazySingleton<NotificationRepo>(() => NotificationRepoImpl(sl()));
   sl.registerLazySingleton<SystemRepo>(() => SystemRepoImpl(sl()));
+  sl.registerLazySingleton<PackageRepo>(() => PackageRepoImpl(sl()));
 
   /// Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -99,6 +109,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetNewsListUseCase(sl()));
   sl.registerLazySingleton(() => UpdateNewsUseCase(sl()));
   sl.registerLazySingleton(() => DeleteNewsUseCase(sl()));
+  sl.registerLazySingleton(() => GetPackagesUseCase(sl()));
+  sl.registerLazySingleton(() => AddPackageUseCase(sl()));
+  sl.registerLazySingleton(() => UpdatePackageUseCase(sl()));
+  sl.registerLazySingleton(() => DeletePackageUseCase(sl()));
 
   /// Bloc
   sl.registerLazySingleton(() => AuthBloc(
@@ -136,5 +150,11 @@ Future<void> init() async {
     getNewsListUseCase: sl(),
     updateNewsUseCase: sl(),
     deleteNewsUseCase: sl(),
+  ));
+  sl.registerLazySingleton(() => PackageBloc(
+    getPackagesUseCase: sl(),
+    addPackageUseCase: sl(),
+    updatePackageUseCase: sl(),
+    deletePackageUseCase: sl(),
   ));
 }

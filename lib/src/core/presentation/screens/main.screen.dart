@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/notification/presentation/screens/notifications.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/screens/profile.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/package/presentation/screen/packages.screen.dart';
 import 'package:window_manager/window_manager.dart';
 
 class MainScreen extends StatefulWidget {
@@ -39,7 +40,7 @@ class _MainScreenState extends State<MainScreen>
 
   List<Widget> orgScreens = [
     const TempScreen(title: "Service providers"),
-    const TempScreen(title: "Packages"),
+    const PackagesScreen(),
     const TempScreen(title: "Commission"),
     const TempScreen(title: "Users"),
   ];

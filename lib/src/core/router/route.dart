@@ -7,6 +7,7 @@ import 'package:smart_reload_system_admin/src/core/router/route.constants.dart';
 import 'package:smart_reload_system_admin/src/feature/System/presentation/screen/news_banner.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/login.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/forgot_password.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/package/presentation/screen/packages.screen.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
@@ -34,6 +35,12 @@ class AppRouter {
         return MaterialPageRoute(
           settings: const RouteSettings(name: RouteConstants.mainScreen),
           builder: (context) => const MainScreen(),
+        );
+
+      case RouteConstants.packagesScreen:
+        return MaterialPageRoute(
+          settings: const RouteSettings(name: RouteConstants.packagesScreen),
+          builder: (context) => const PackagesScreen(),
         );
 
       case RouteConstants.newsBannerScreen:
