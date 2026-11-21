@@ -34,6 +34,12 @@ import 'package:smart_reload_system_admin/src/feature/profile/domain/repository/
 import 'package:smart_reload_system_admin/src/feature/profile/domain/usecase/update_password.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/domain/usecase/update_profile.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/bloc/profile.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/system/data/datasource/system.remote_datasource.dart';
+import 'package:smart_reload_system_admin/src/feature/system/data/repository/system.repo_impl.dart';
+import 'package:smart_reload_system_admin/src/feature/system/domain/repository/system.repo.dart';
+import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/add_new_news.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/get_news_list.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -46,7 +52,6 @@ Future<void> init() async {
   );
 
   sl.registerLazySingleton(() => const FlutterSecureStorage());
-  // sl.registerLazySingleton(() => NotificationService());
 
 
   /// Data source
@@ -56,6 +61,7 @@ Future<void> init() async {
   sl.registerLazySingleton<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(sl()));
   sl.registerLazySingleton<NotificationRemoteDataSource>(() => NotificationRemoteDataSourceImpl(sl()));
   sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(firebaseAuth: sl(), firestore: sl()));
+  sl.registerLazySingleton<SystemRemoteDataSource>(() => SystemRemoteDataSourceImpl(sl()));
 
 
   /// Repository
@@ -66,6 +72,7 @@ Future<void> init() async {
     () => ProfileRepoImpl(remoteAuthDataSource: sl(), remoteDataSource: sl()),
   );
   sl.registerLazySingleton<NotificationRepo>(() => NotificationRepoImpl(sl()));
+  sl.registerLazySingleton<SystemRepo>(() => SystemRepoImpl(sl()));
 
   /// Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -85,6 +92,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetNotificationsUseCase(sl()));
   sl.registerLazySingleton(() => MarkAllAsReadUseCase(sl()));
   sl.registerLazySingleton(() => MarkAsReadUseCase(sl()));
+
+  sl.registerLazySingleton(() => AddNewNewsUseCase(sl()));
+  sl.registerLazySingleton(() => GetNewsListUseCase(sl()));
 
   /// Bloc
   sl.registerLazySingleton(() => AuthBloc(
@@ -117,4 +127,8 @@ Future<void> init() async {
       markAllAsReadUseCase: sl(),
     ),
   );
+  sl.registerLazySingleton(() => NewsBloc(
+    addNewNewsUseCase: sl(),
+    getNewsListUseCase: sl(),
+  ));
 }

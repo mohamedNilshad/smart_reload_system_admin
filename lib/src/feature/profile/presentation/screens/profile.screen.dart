@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reload_system_admin/src/core/constants/app_colors.dart';
 import 'package:smart_reload_system_admin/src/core/constants/sizes.dart';
-import 'package:smart_reload_system_admin/src/core/presentation/widgets/app_bottom_sheet.widget.dart';
+import 'package:smart_reload_system_admin/src/core/presentation/widgets/app_popup_dialog.widget.dart';
 import 'package:smart_reload_system_admin/src/core/presentation/widgets/app_snackbar.widget.dart';
 import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_buttons/custom_elevated_button.widget.dart';
 import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_card.widget.dart';
@@ -11,6 +11,7 @@ import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_t
 import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_text/title_text.widget.dart';
 import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_text_field.widget.dart';
 import 'package:smart_reload_system_admin/src/core/presentation/widgets/svg_builder.widget.dart';
+import 'package:smart_reload_system_admin/src/core/utils/helpers/helper_functions.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/domain/entity/user.entity.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.event.dart';
@@ -115,6 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 SizedBox(height: Sizes.lg),
                 CCard(
                   isDark: true,
+                  width: HelperFunctions.screenWidth(context) / 2,
                   child: Form(
                     key: _formKey,
                     child:  BlocListener<ProfileBloc, ProfileState>(

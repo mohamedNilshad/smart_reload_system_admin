@@ -10,6 +10,7 @@ import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/aut
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/session.cubit.dart';
 import 'package:smart_reload_system_admin/src/feature/notification/presentation/bloc/notification.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/bloc/profile.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.bloc.dart';
 import 'package:smart_reload_system_admin/src/injection_container.dart';
 
 
@@ -25,6 +26,7 @@ class App extends StatelessWidget {
         BlocProvider(create: (_) => sl<SessionCubit>()),
         BlocProvider(create: (_) => sl<ProfileBloc>()),
         BlocProvider(create: (_) => sl<NotificationBloc>()),
+        BlocProvider(create: (_) => sl<NewsBloc>()),
 
       ],
       child: MaterialApp(

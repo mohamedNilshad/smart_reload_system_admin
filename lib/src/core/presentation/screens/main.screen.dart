@@ -5,6 +5,7 @@ import 'package:smart_reload_system_admin/src/core/presentation/widgets/app_snac
 import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_buttons/custom_elevated_button.widget.dart';
 import 'package:smart_reload_system_admin/src/core/router/route.constants.dart';
 import 'package:smart_reload_system_admin/src/core/utils/helpers/helper_functions.dart';
+import 'package:smart_reload_system_admin/src/feature/System/presentation/screen/system.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.event.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.state.dart';
@@ -31,7 +32,7 @@ class _MainScreenState extends State<MainScreen>
     const TempScreen(title: "Dashboard"), //report
     const TempScreen(title: "Manage"), //manage(Service providers, packages, commission percentage, vendors and clients.)
     const TempScreen(title: "Wallet"), //wallet
-    const TempScreen(title: "System"), //system
+    SystemScreen(),
     NotificationScreen(),
     ProfileScreen(),
   ];
@@ -47,7 +48,7 @@ class _MainScreenState extends State<MainScreen>
     "Dashboard",
     "Manage",
     "Wallet",
-    "System",
+    "system",
     "Notification",
     "Profile",
   ];

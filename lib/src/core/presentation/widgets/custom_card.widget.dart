@@ -11,13 +11,14 @@ class CCard extends StatelessWidget {
   final bool disableShadow;
   final Color? bgColor;
   final bool isDark;
-  const CCard({super.key, required this.child, this.isDark = false, this.bgColor, this.padding, this.radius, this.margin, this.disableShadow = false});
+  final double? width;
+  const CCard({super.key, required this.child, this.isDark = false, this.width, this.bgColor, this.padding, this.radius, this.margin, this.disableShadow = false});
 
   @override
   Widget build(BuildContext context) {
     double screenWidth = HelperFunctions.screenWidth(context);
     return Container(
-      width: screenWidth/2,
+      width: width ?? screenWidth/3,
       padding: padding ?? EdgeInsets.symmetric(horizontal: Sizes.md, vertical: Sizes.lg),
       margin: margin ?? EdgeInsets.symmetric(horizontal: Sizes.sm),
       decoration: BoxDecoration(

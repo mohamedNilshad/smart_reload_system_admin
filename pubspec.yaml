@@ -1,5 +1,5 @@
 name: smart_reload_system_admin
-description: "Smart Reload System Admin"
+description: "Smart Reload system Admin"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -35,6 +35,7 @@ dependencies:
   firebase_core: ^5.1.0
   firebase_auth: ^7.0.1
   firebase_database: ^13.0.1
+  data_table_2: ^2.7.2
 
 dev_dependencies:
   flutter_test:

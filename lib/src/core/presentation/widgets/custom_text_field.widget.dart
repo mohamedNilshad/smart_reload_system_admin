@@ -13,6 +13,7 @@ class CTextField extends StatefulWidget {
   final bool isDark;
   final TextInputType keyboardType;
   final IconData? prefixIcon;
+  final int? maxLines;
   final String? Function(String?)? validator;
   final String? Function(String?)? onChanged;
   final TextCapitalization? textCapitalization;
@@ -29,6 +30,7 @@ class CTextField extends StatefulWidget {
     this.isDark = false,
     this.keyboardType = TextInputType.text,
     this.errorMessage,
+    this.maxLines,
     this.prefixIcon,
     this.validator,
     this.onChanged,
@@ -72,6 +74,7 @@ class _CTextFieldState extends State<CTextField> {
           validator: widget.validator,
           onChanged: widget.onChanged,
           readOnly: widget.readOnly,
+          maxLines: widget.maxLines,
           style: TextStyle(
             color: isDark ? AppColors.white : null,
           ),

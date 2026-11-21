@@ -4,6 +4,7 @@ import 'package:smart_reload_system_admin/src/core/presentation/screens/main.scr
 import 'package:smart_reload_system_admin/src/core/presentation/screens/splash.screen.dart';
 import 'package:smart_reload_system_admin/src/core/presentation/screens/unknown.screen.dart';
 import 'package:smart_reload_system_admin/src/core/router/route.constants.dart';
+import 'package:smart_reload_system_admin/src/feature/System/presentation/screen/news_banner.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/login.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/forgot_password.screen.dart';
 
@@ -34,6 +35,18 @@ class AppRouter {
           settings: const RouteSettings(name: RouteConstants.mainScreen),
           builder: (context) => const MainScreen(),
         );
+
+      case RouteConstants.newsBannerScreen:
+        return MaterialPageRoute(
+          settings: const RouteSettings(name: RouteConstants.newsBannerScreen),
+          builder: (context) => const NewsBannerScreen(),
+        );
+
+      // case RouteConstants.commissionScreen:
+      //   return MaterialPageRoute(
+      //     settings: const RouteSettings(name: RouteConstants.commissionScreen),
+      //     builder: (context) => const CommissionScreen(),
+      //   );
 
 
     }
