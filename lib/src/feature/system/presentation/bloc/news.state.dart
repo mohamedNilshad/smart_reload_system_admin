@@ -39,10 +39,11 @@ class NewsFailure extends NewsState {
   List<Object?> get props => [message];
 }
 
-class NewsUpdateSuccess extends NewsState {
-  const NewsUpdateSuccess();
+
+class NewsSuccess extends NewsState {
+  const NewsSuccess();
 }
 
-class NewsAddedSuccess extends NewsState {
-  const NewsAddedSuccess();
+class NewsDeleteSuccess extends NewsState {
+  const NewsDeleteSuccess();
 }

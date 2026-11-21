@@ -130,6 +130,41 @@ class AppDialog {
       ),
     );
   }
+
+  /// 4. Confirmation dialog with Cancel + Confirm buttons.
+  /// Returns `true` if confirmed, `false` if cancelled, or `null` if dismissed.
+  static Future<bool?> showConfirm(
+      BuildContext context, {
+        required String title,
+        required String subtitle,
+        String confirmText = 'Confirm',
+        String cancelText = 'Cancel',
+        bool isDark = false,
+        bool isDestructive = false,
+        IconData? icon,
+        VoidCallback? onConfirm,
+        ValueListenable<bool>? isLoading,
+        bool barrierDismissible = true,
+      }) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: barrierDismissible,
+      builder: (_) => _DialogShell(
+        isDark: isDark,
+        child: _ConfirmContent(
+          isDark: isDark,
+          title: title,
+          subtitle: subtitle,
+          confirmText: confirmText,
+          cancelText: cancelText,
+          isDestructive: isDestructive,
+          icon: icon,
+          onConfirm: onConfirm,
+          isLoading: isLoading,
+        ),
+      ),
+    );
+  }
 }
 
 class _DialogShell extends StatelessWidget {
@@ -420,6 +455,122 @@ class _RadioSelectContentState extends State<_RadioSelectContent> {
             child: const Text('Confirm'),
           ),
         ],
+      ],
+    );
+  }
+}
+
+class _ConfirmContent extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String confirmText;
+  final String cancelText;
+  final bool isDark;
+  final bool isDestructive;
+  final IconData? icon;
+  final VoidCallback? onConfirm;
+  final ValueListenable<bool>? isLoading;
+
+  const _ConfirmContent({
+    required this.title,
+    required this.subtitle,
+    required this.confirmText,
+    required this.cancelText,
+    required this.isDark,
+    required this.isDestructive,
+    this.icon,
+    this.onConfirm,
+    this.isLoading,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final accentColor = isDestructive
+        ? theme.colorScheme.error
+        : AppColors.secondary;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (icon != null) ...[
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: accentColor, size: 22),
+          ),
+          const SizedBox(height: 14),
+        ],
+        TitleText(text: title, color: isDark ? AppColors.white : null),
+        const SizedBox(height: Sizes.sm),
+        BodyText(
+          text: subtitle,
+          textAlign: TextAlign.start,
+          color: isDark ? AppColors.grey : AppColors.darkerGrey,
+        ),
+        const SizedBox(height: 24),
+        if (isLoading != null)
+          ValueListenableBuilder<bool>(
+            valueListenable: isLoading!,
+            builder: (context, loading, _) => _buildActions(context, loading),
+          )
+        else
+          _buildActions(context, false),
+      ],
+    );
+  }
+
+  Widget _buildActions(BuildContext context, bool loading) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton(
+            onPressed: loading ? null : () => Navigator.of(context).pop(false),
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, Sizes.buttonHeight),
+              side: BorderSide(
+                color: theme.colorScheme.outline.withValues(alpha: 0.5),
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              cancelText,
+              style: TextStyle(
+                color: isDark ? AppColors.white : AppColors.black,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: ElevatedButton(
+            onPressed: loading
+                ? null
+                : (onConfirm ?? () => Navigator.of(context).pop(true)),
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, Sizes.buttonHeight),
+              backgroundColor: isDestructive ? AppColors.error : null,
+              foregroundColor: isDestructive ? AppColors.white : null,
+            ),
+            child: loading
+                ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.primary,
+              ),
+            )
+                : Text(confirmText),
+          ),
+        ),
       ],
     );
   }

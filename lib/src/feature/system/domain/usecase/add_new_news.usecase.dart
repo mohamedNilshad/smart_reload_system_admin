@@ -7,7 +7,7 @@ class AddNewNewsUseCase {
   final SystemRepo repo;
   AddNewNewsUseCase(this.repo);
 
-  Future<Either<Failure, bool>> call(BannerNewsModel bannerNewsModel){
-    return repo.addNewNews(bannerNewsModel);
+  Future<Either<Failure, bool>> call(BannerNewsModel bannerNewsModel, {String? publishedId}){
+    return repo.addNewNews(bannerNewsModel, publishedId: publishedId);
   }
 }

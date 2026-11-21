@@ -10,9 +10,19 @@ class SystemRepoImpl implements SystemRepo {
   SystemRepoImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, bool>> addNewNews(BannerNewsModel bannerNewsModel) async {
+  Future<Either<Failure, bool>> addNewNews(BannerNewsModel bannerNewsModel, {String? publishedId}) async {
     try {
-      final result = await remoteDataSource.addNewNews(bannerNewsModel);
+      final result = await remoteDataSource.addNewNews(bannerNewsModel, publishedId);
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> updateNews(BannerNewsModel bannerNewsModel, {String? publishedId}) async {
+    try {
+      final result = await remoteDataSource.updateNews(bannerNewsModel, publishedId);
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));
@@ -23,6 +33,16 @@ class SystemRepoImpl implements SystemRepo {
   Future<Either<Failure, List<BannerNewsModel>>> getNewsList() async {
     try {
       final result = await remoteDataSource.getNewsList();
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> deleteNews(String newsId) async {
+    try {
+      final result = await remoteDataSource.deleteNews(newsId);
       return Right(result);
     } on ServerException catch (e) {
       return Left(ServerFailure(e.message));

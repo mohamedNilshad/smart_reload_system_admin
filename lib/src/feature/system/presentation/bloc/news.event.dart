@@ -10,20 +10,22 @@ abstract class NewsEvent extends Equatable {
 
 class NewsUpdateRequested extends NewsEvent {
   final BannerNewsModel bannerNewsModel;
+  final String? publishedId;
 
-  const NewsUpdateRequested({required this.bannerNewsModel});
+  const NewsUpdateRequested({required this.bannerNewsModel, this.publishedId});
 
   @override
-  List<Object?> get props => [bannerNewsModel];
+  List<Object?> get props => [bannerNewsModel, publishedId];
 }
 
 class AddNewsRequested extends NewsEvent {
   final BannerNewsModel bannerNewsModel;
+  final String? publishedId;
 
-  const AddNewsRequested({required this.bannerNewsModel});
+  const AddNewsRequested({required this.bannerNewsModel, this.publishedId});
 
   @override
-  List<Object?> get props => [bannerNewsModel];
+  List<Object?> get props => [bannerNewsModel, publishedId];
 }
 
 class NewsReset extends NewsEvent {
@@ -32,4 +34,9 @@ class NewsReset extends NewsEvent {
 
 class GetNewsListRequested extends NewsEvent {
   const GetNewsListRequested();
+}
+
+class DeleteNewsRequested extends NewsEvent {
+  final String newsId;
+  const DeleteNewsRequested({required this.newsId});
 }

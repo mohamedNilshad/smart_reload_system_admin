@@ -37,6 +37,8 @@ class _NewsBannerScreenState extends State<NewsBannerScreen> {
 
   List<BannerNewsModel> newsList = [];
   bool isFetching = false;
+  String deletedId = "";
+  BannerNewsModel? publishedNews;
 
   @override
   void initState() {
@@ -68,7 +70,7 @@ class _NewsBannerScreenState extends State<NewsBannerScreen> {
               loadingBtn.value = false;
             }
 
-            if (state is NewsAddedSuccess) {
+            if (state is NewsSuccess) {
               AppSnackbar.showSuccess(context, "New Banner added successfully");
               loadingBtn.value = false;
               _titleController.clear();
@@ -78,11 +80,30 @@ class _NewsBannerScreenState extends State<NewsBannerScreen> {
               Navigator.of(context).pop();
               context.read<NewsBloc>().add(GetNewsListRequested());
             }
+
             if (state is NewsLoaded) {
               setState(() {
                 newsList = state.newsList;
+                publishedNews = newsList.firstWhere(
+                  (news) => news.status == true,
+                  orElse: () => BannerNewsModel(
+                    title: '',
+                    body: '',
+                    isNew: false,
+                    status: false,
+                  ),
+                );
                 isFetching = false;
               });
+            }
+
+            if (state is NewsDeleteSuccess) {
+              setState(() {
+                newsList.removeWhere((news) => news.id == deletedId);
+                deletedId = "";
+              });
+
+              AppSnackbar.showSuccess(context, "News deleted successfully");
             }
           },
           child: Column(
@@ -95,76 +116,8 @@ class _NewsBannerScreenState extends State<NewsBannerScreen> {
                     _bodyController.clear();
                     _isNew.value = false;
                     _publishNow.value = false;
-                    AppDialog.showForm(
-                      context,
-                      title: "Add News",
-                      form: Form(
-                        key: _formKey,
-                        child: Column(
-                          spacing: Sizes.spaceBtwInputField,
-                          children: [
-                            CTextField(
-                              isDark: true,
-                              controller: _titleController,
-                              label: 'Title',
-                              hint: 'Enter Banner Title',
-                              keyboardType: TextInputType.text,
-                              prefixIcon: Icons.edit,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a title';
-                                }
-                                return null;
-                              },
-                            ),
-                            CTextField(
-                              isDark: true,
-                              controller: _bodyController,
-                              label: 'Body',
-                              hint: 'Enter Banner Body',
-                              maxLines: 4,
-                              keyboardType: TextInputType.text,
-                              prefixIcon: Icons.description,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter a body';
-                                }
-                                return null;
-                              },
-                            ),
-                            Row(
-                              spacing: Sizes.lg,
-                              children: [
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: _isNew,
-                                  builder: (context, isNew, _) => AppSwitchTile(
-                                    compact: true,
-                                    isDark: true,
-                                    value: isNew,
-                                    label: 'Is New',
-                                    onChanged: (val) => _isNew.value = val,
-                                  ),
-                                ),
-                                ValueListenableBuilder<bool>(
-                                  valueListenable: _publishNow,
-                                  builder: (context, publishNow, _) =>
-                                      AppSwitchTile(
-                                        compact: true,
-                                        isDark: true,
-                                        value: publishNow,
-                                        label: 'Publish now ?',
-                                        onChanged: (val) =>
-                                            _publishNow.value = val,
-                                      ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      buttonText: "Save",
-                      isDark: true,
-                      isLoading: loadingBtn,
+
+                    _showForm(
                       onSubmit: () {
                         if (_formKey.currentState!.validate()) {
                           FocusManager.instance.primaryFocus?.unfocus();
@@ -176,7 +129,10 @@ class _NewsBannerScreenState extends State<NewsBannerScreen> {
                                 status: _publishNow.value,
                               );
                           context.read<NewsBloc>().add(
-                            AddNewsRequested(bannerNewsModel: bannerNewsModel),
+                            AddNewsRequested(
+                              bannerNewsModel: bannerNewsModel,
+                              publishedId: publishedNews?.id,
+                            ),
                           );
                         }
                       },
@@ -188,7 +144,7 @@ class _NewsBannerScreenState extends State<NewsBannerScreen> {
               ),
               SizedBox(height: Sizes.lg),
               Expanded(
-                child: DataTable2(
+              child: DataTable2(
                   scrollController: _scrollController,
                   columnSpacing: 12,
                   horizontalMargin: 12,
@@ -202,38 +158,92 @@ class _NewsBannerScreenState extends State<NewsBannerScreen> {
                     DataColumn2(label: Text('Status'), fixedWidth: 100),
                     DataColumn2(label: Text('Action'), fixedWidth: 100),
                   ],
-                  rows: isFetching
-                      ? [_buildMergeTableRow(isLoading: true)]
-                      : newsList.isEmpty
-                      ? [_buildMergeTableRow(text: "Empty")]
-                      : newsList.map((news) {
-                          return DataRow(
-                            cells: [
-                              DataCell(Text(news.title)),
-                              DataCell(Text(news.body)),
-                              DataCell(
-                                CChip(
-                                  label: news.isNew ? 'YES' : 'NO',
-                                  fontColor: AppColors.white,
-                                  bgColor: news.isNew
-                                      ? AppColors.primary
-                                      : AppColors.grey,
+                  rows: isFetching ? ([_buildMergeTableRow(isLoading: true)]) : newsList.isEmpty ?
+                  ([_buildMergeTableRow(text: "Empty")]) : newsList.map((news) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(news.title)),
+                        DataCell(Text(news.body)),
+                        DataCell(
+                          CChip(
+                            label: news.isNew ? 'YES' : 'NO',
+                            fontColor: AppColors.white,
+                            bgColor: news.isNew
+                                ? AppColors.primary
+                                : AppColors.grey,
+                          ),
+                        ),
+                        DataCell(
+                          CChip(
+                            label: news.status ? 'PUBLISHED' : 'DRAFT',
+                            bgColor: news.status
+                                ? AppColors.green
+                                : AppColors.grey,
+                            fontColor: AppColors.white,
+                          ),
+                        ),
+                        DataCell(
+                            Row(
+                              spacing: Sizes.sm,
+                              children: [
+                                IconButton(
+                                  onPressed: deletedId.isNotEmpty ? null : (){
+                                    _titleController.text = news.title;
+                                    _bodyController.text = news.body;
+                                    _isNew.value = news.isNew;
+                                    _publishNow.value = news.status;
+
+                                    _showForm(
+                                        isEdit: true,
+                                        onSubmit: () {
+                                          if (_formKey.currentState!.validate()) {
+                                            FocusManager.instance.primaryFocus?.unfocus();
+                                            final BannerNewsModel bannerNewsModel = BannerNewsModel(
+                                              id: news.id,
+                                              title: _titleController.text.trim(),
+                                              body: _bodyController.text.trim(),
+                                              isNew: _isNew.value,
+                                              status: _publishNow.value,
+                                            );
+                                            context.read<NewsBloc>().add(
+                                              NewsUpdateRequested(bannerNewsModel: bannerNewsModel, publishedId: publishedNews?.id),
+                                            );
+                                          }
+                                        }
+                                    );
+                                  },
+                                  color: AppColors.buttonPrimary,
+                                  icon: Icon(Icons.edit),
                                 ),
-                              ),
-                              DataCell(
-                                CChip(
-                                  label: news.status ? 'PUBLISHED' : 'DRAFT',
-                                  bgColor: news.status
-                                      ? AppColors.green
-                                      : AppColors.grey,
-                                  fontColor: AppColors.white,
+                                IconButton(
+                                  onPressed: deletedId.isNotEmpty ? null : () async {
+
+                                    final confirmed = await AppDialog.showConfirm(
+                                      context,
+                                      isDark: true,
+                                      isDestructive: true,
+                                      icon: Icons.delete_outline_rounded,
+                                      title: 'Confirm Delete ?',
+                                      subtitle: 'Are you sure you want to delete this news banner? This action cannot be undone.',
+                                      cancelText: 'Cancel',
+                                      confirmText: 'Delete',
+                                    );
+
+                                    if (context.mounted && confirmed == true) {
+                                      setState(() => deletedId = news.id!);
+                                      context.read<NewsBloc>().add(DeleteNewsRequested(newsId: deletedId));
+                                    }
+
+                                  },
+                                  color: AppColors.red,
+                                  icon: deletedId == news.id ? CCircularProgressIndicator(radius: 15, color: AppColors.error): Icon(Icons.delete),
                                 ),
-                              ),
-                              DataCell(Icon(Icons.edit)),
-                            ],
-                          );
-                        }).toList(),
-                ),
+                              ],
+                            )
+                        ),
+                      ],
+                    );
+                  }).toList()),
               ),
             ],
           ),
@@ -252,11 +262,84 @@ class _NewsBannerScreenState extends State<NewsBannerScreen> {
     return DataRow(
       cells: [
         DataCell(SizedBox()),
-        DataCell(SizedBox()),
         DataCell(widget),
         DataCell(SizedBox()),
         DataCell(SizedBox()),
+        DataCell(SizedBox()),
       ],
+    );
+  }
+
+  void _showForm({bool isEdit = false, void Function()? onSubmit}) {
+    AppDialog.showForm(
+      context,
+      title: "Add News",
+      form: Form(
+        key: _formKey,
+        child: Column(
+          spacing: Sizes.spaceBtwInputField,
+          children: [
+            CTextField(
+              isDark: true,
+              controller: _titleController,
+              label: 'Title',
+              hint: 'Enter Banner Title',
+              keyboardType: TextInputType.text,
+              prefixIcon: Icons.edit,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a title';
+                }
+                return null;
+              },
+            ),
+            CTextField(
+              isDark: true,
+              controller: _bodyController,
+              label: 'Body',
+              hint: 'Enter Banner Body',
+              maxLines: 4,
+              keyboardType: TextInputType.text,
+              prefixIcon: Icons.description,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a body';
+                }
+                return null;
+              },
+            ),
+            Row(
+              spacing: Sizes.lg,
+              children: [
+                ValueListenableBuilder<bool>(
+                  valueListenable: _isNew,
+                  builder: (context, isNew, _) => AppSwitchTile(
+                    compact: true,
+                    isDark: true,
+                    value: isNew,
+                    label: 'Is New',
+                    onChanged: (val) => _isNew.value = val,
+                  ),
+                ),
+                ValueListenableBuilder<bool>(
+                  valueListenable: _publishNow,
+                  builder: (context, publishNow, _) => AppSwitchTile(
+                    compact: true,
+                    isDark: true,
+                    value: publishNow,
+                    label: 'Publish now ?',
+                    onChanged: (val) => _publishNow.value = val,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+      buttonText: isEdit ? "Update" : "Save",
+      isDark: true,
+      isLoading: loadingBtn,
+      onSubmit: onSubmit,
     );
   }
 }
