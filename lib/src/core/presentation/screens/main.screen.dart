@@ -10,6 +10,7 @@ import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/aut
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/notification/presentation/screens/notifications.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/screens/profile.screen.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -31,7 +32,7 @@ class _MainScreenState extends State<MainScreen>
     const TempScreen(title: "Manage"), //manage(Service providers, packages, commission percentage, vendors and clients.)
     const TempScreen(title: "Wallet"), //wallet
     const TempScreen(title: "System"), //system
-    const TempScreen(title: "Notification"), //notification
+    NotificationScreen(),
     ProfileScreen(),
   ];
 
