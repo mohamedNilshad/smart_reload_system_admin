@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_reload_system_admin/src/core/constants/app_colors.dart';
 import 'package:smart_reload_system_admin/src/core/constants/sizes.dart';
+import 'package:smart_reload_system_admin/src/core/utils/helpers/helper_functions.dart';
 
 class CCard extends StatelessWidget {
   final Widget child;
@@ -14,8 +15,9 @@ class CCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = HelperFunctions.screenWidth(context);
     return Container(
-      width: double.infinity,
+      width: screenWidth/3,
       padding: padding ?? EdgeInsets.symmetric(horizontal: Sizes.md, vertical: Sizes.lg),
       margin: margin ?? EdgeInsets.symmetric(horizontal: Sizes.sm),
       decoration: BoxDecoration(

@@ -1,9 +1,12 @@
 import 'package:smart_reload_system_admin/src/core/constants/app_colors.dart';
 import 'package:smart_reload_system_admin/src/core/constants/app_strings.dart';
 import 'package:smart_reload_system_admin/src/core/constants/sizes.dart';
-import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom.circular_progress_indicator.dart';
+import 'package:smart_reload_system_admin/src/core/presentation/widgets/app_snackbar.widget.dart';
+import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_buttons/custom_elevated_button.widget.dart';
+import 'package:smart_reload_system_admin/src/core/router/route.constants.dart';
 import 'package:smart_reload_system_admin/src/core/utils/helpers/helper_functions.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.event.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,13 +23,11 @@ class _MainScreenState extends State<MainScreen>
     with WidgetsBindingObserver, WindowListener {
   int currentIndex = 0;
   int currentSubMenuIndex = 0;
-  bool isOrganizationExpanded = false;
+  bool isManageExpanded = false;
 
   List<Widget> screens = [
     const TempScreen(title: "Dashboard"), //report
-    const TempScreen(
-      title: "Manage",
-    ), //manage(Service providers, packages, commission percentage, vendors and clients.)
+    const TempScreen(title: "Manage"), //manage(Service providers, packages, commission percentage, vendors and clients.)
     const TempScreen(title: "Wallet"), //wallet
     const TempScreen(title: "System"), //system
     const TempScreen(title: "Notification"), //notification
@@ -58,7 +59,7 @@ class _MainScreenState extends State<MainScreen>
     Icons.person_outline_rounded,
   ];
 
-  final List<String> organizationSubmenu = [
+  final List<String> manageSubmenu = [
     "Service providers",
     "Packages",
     "Commission",
@@ -76,7 +77,7 @@ class _MainScreenState extends State<MainScreen>
   @override
   void onWindowClose() async {
     bool isPreventClose = await windowManager.isPreventClose();
-    bool isLogouting = false;
+    bool isLogoutLoading = false;
     if (isPreventClose && mounted) {
       bool shouldClose =
           await showDialog(
@@ -85,28 +86,32 @@ class _MainScreenState extends State<MainScreen>
               return BlocListener<AuthBloc, AuthState>(
                 listener: (context, state) {
                   if (state is AuthLoading) {
-                    if (mounted) setState(() => isLogouting = true);
-                  } else {
-                    if (mounted) setState(() => isLogouting = false);
+                    if (mounted) setState(() => isLogoutLoading = state.isLogout);
+                  }
+
+                  if(state is AuthLogoutSuccess) {
+                    if (mounted) setState(() => isLogoutLoading = false);
+                    Navigator.of(context).pushNamedAndRemoveUntil(RouteConstants.loginScreen, (route) => false);
+                  }
+
+                  if(state is AuthFailureState) {
+                    if (mounted) setState(() => isLogoutLoading = false);
+                    AppSnackbar.showError(context, state.message);
                   }
                 },
                 child: AlertDialog(
                   title: const Text("Confirm Exit"),
-                  content: const Text(
-                    "Are you sure you want to Logout and Close the app?",
-                  ),
+                  content: const Text("Are you sure you want to Logout ?"),
                   actions: [
                     TextButton(
                       child: const Text("Cancel"),
                       onPressed: () => Navigator.of(context).pop(false),
                     ),
-                    ElevatedButton(
-                      child: isLogouting
-                          ? CCircularProgressIndicator(radius: 12.0)
-                          : const Text("Logout"),
-                      onPressed: () {
-                        // context.read<AuthBloc>().add(AuthLogoutEvent(context: context, isClose: true));
-                      },
+                    CElevatedButton(
+                      isLoading: isLogoutLoading,
+                      width: 100,
+                      label:"Logout",
+                      onPressed: () => context.read<AuthBloc>().add(LogoutRequested()),
                     ),
                   ],
                 ),
@@ -150,11 +155,7 @@ class _MainScreenState extends State<MainScreen>
                 Divider(),
                 Expanded(
                   child: ListView.builder(
-                    itemCount:
-                        titles.length +
-                        (isOrganizationExpanded
-                            ? organizationSubmenu.length
-                            : 0),
+                    itemCount: titles.length + (isManageExpanded ? manageSubmenu.length : 0),
                     itemBuilder: (context, index) {
                       if (index == 1) {
                         return ListTile(
@@ -164,45 +165,34 @@ class _MainScreenState extends State<MainScreen>
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
-                          selected:
-                              isOrganizationExpanded || index == currentIndex,
+                          selected: isManageExpanded || index == currentIndex,
                           selectedTileColor: AppColors.primary,
-                          titleTextStyle: Theme.of(
-                            context,
-                          ).textTheme.titleSmall,
+                          titleTextStyle: Theme.of(context).textTheme.titleSmall,
                           onTap: () {
                             setState(() {
-                              isOrganizationExpanded = !isOrganizationExpanded;
-                              if (isOrganizationExpanded) currentIndex = index;
+                              isManageExpanded = !isManageExpanded;
+                              if (isManageExpanded) currentIndex = index;
                             });
                           },
                           trailing: Icon(
-                            isOrganizationExpanded
-                                ? Icons.keyboard_arrow_up
-                                : Icons.keyboard_arrow_down,
+                            isManageExpanded ? Icons.keyboard_arrow_down : Icons.keyboard_arrow_right_rounded,
                           ),
                         );
-                      } else if (index > 1 &&
-                          index < 2 + organizationSubmenu.length &&
-                          isOrganizationExpanded) {
+                      } else if (index > 1 && index < 2 + manageSubmenu.length && isManageExpanded) {
                         final submenuIndex = index - 2;
                         return Padding(
                           padding: const EdgeInsets.only(left: 10.0),
                           child: ListTile(
                             title: Text(
-                              organizationSubmenu[submenuIndex],
+                              manageSubmenu[submenuIndex],
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
                             ),
-                            titleTextStyle: Theme.of(
-                              context,
-                            ).textTheme.bodySmall,
+                            titleTextStyle: Theme.of(context).textTheme.bodySmall,
                             selected: submenuIndex == currentSubMenuIndex,
-                            selectedTileColor: AppColors.secondary,
+                            selectedTileColor: AppColors.purple,
                             onTap: () {
-                              debugPrint(
-                                "Tapped on ${organizationSubmenu[submenuIndex]}",
-                              );
+                              debugPrint("Tapped on ${manageSubmenu[submenuIndex]}");
                               setState(() {
                                 currentSubMenuIndex = submenuIndex;
                                 currentIndex = 1;
@@ -212,8 +202,8 @@ class _MainScreenState extends State<MainScreen>
                         );
                       } else {
                         int adjustedIndex = index;
-                        if (index > 1 && isOrganizationExpanded) {
-                          adjustedIndex = index - organizationSubmenu.length;
+                        if (index > 1 && isManageExpanded) {
+                          adjustedIndex = index - manageSubmenu.length;
                         }
                         return ListTile(
                           leading: Icon(icons[adjustedIndex]),
@@ -224,14 +214,14 @@ class _MainScreenState extends State<MainScreen>
                           ),
                           selected:
                               adjustedIndex == currentIndex &&
-                              !isOrganizationExpanded,
+                              !isManageExpanded,
                           selectedTileColor: AppColors.primary,
                           titleTextStyle: Theme.of(
                             context,
                           ).textTheme.titleSmall,
                           onTap: () {
                             setState(() {
-                              isOrganizationExpanded = false;
+                              isManageExpanded = false;
                               currentIndex = adjustedIndex;
                             });
                           },
@@ -246,7 +236,7 @@ class _MainScreenState extends State<MainScreen>
           // Content Area
           Expanded(
             child: Container(
-              child: isOrganizationExpanded
+              child: isManageExpanded
                   ? orgScreens[currentSubMenuIndex]
                   : screens[currentIndex],
             ),

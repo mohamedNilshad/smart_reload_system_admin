@@ -5,7 +5,7 @@ import 'package:smart_reload_system_admin/src/core/presentation/screens/splash.s
 import 'package:smart_reload_system_admin/src/core/presentation/screens/unknown.screen.dart';
 import 'package:smart_reload_system_admin/src/core/router/route.constants.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/login.screen.dart';
-import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/verify_email.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/forgot_password.screen.dart';
 
 class AppRouter {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {

@@ -30,15 +30,14 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<UserEntity> login({required String email, required String password}) async {
     try {
-      final lookup = await firestore
-          .collection('phone_lookup')
+      final lookup = await firestore.collection('phone_lookup')
           .where('email', isEqualTo: email)
           .limit(1)
           .get();
 
       if (lookup.docs.isEmpty || lookup.docs.first.data()['role'] != 'Admin') {
         ErrorLogger.log(
-          "Invalid Credentials",
+          'Invalid Credentials',
           location: 'AuthRemoteDataSourceImpl.login',
         );
         throw ServerException('Account not found');
@@ -49,11 +48,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         password: password,
       );
 
-      final doc = await firestore.collection(_collection).doc(credential.user!.uid).get();
+      final uid = credential.user?.uid;
+      if (uid == null) {
+        throw ServerException('Authentication failed: missing user ID');
+      }
+
+      final doc = await firestore.collection(_collection).doc(uid).get();
+
+      if (!doc.exists || doc.data() == null) {
+        await firebaseAuth.signOut();
+        ErrorLogger.log(
+          'Admin profile document missing for uid: $uid',
+          location: 'AuthRemoteDataSourceImpl.login',
+        );
+        throw ServerException('Admin profile not found');
+      }
 
       return UserEntity.fromJson(doc.data()!);
-
-
+    } on ServerException {
+      rethrow;
     } on fb.FirebaseAuthException catch (e, st) {
       ErrorLogger.log(
         e,
@@ -61,14 +74,20 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         stackTrace: st,
       );
       throw ServerException(_mapFirebaseError(e));
-
-    } catch(e, st) {
+    } on FirebaseException catch (e, st) {
       ErrorLogger.log(
         e,
         location: 'AuthRemoteDataSourceImpl.login',
         stackTrace: st,
       );
-      throw ServerException('An unexpected error occurred: $e');
+      throw ServerException(_mapFirestoreError(e));
+    } catch (e, st) {
+      ErrorLogger.log(
+        e,
+        location: 'AuthRemoteDataSourceImpl.login',
+        stackTrace: st,
+      );
+      throw ServerException('An unexpected error occurred');
     }
   }
 
@@ -203,18 +222,52 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   String _mapFirebaseError(fb.FirebaseAuthException e) {
     switch (e.code) {
+      case 'invalid-credential':
+      case 'wrong-password':
+        return 'Incorrect email or password.';
+      case 'user-not-found':
+        return 'No account found.';
+      case 'invalid-email':
+        return 'Invalid email address.';
+      case 'user-disabled':
+        return 'This account has been disabled.';
+      case 'too-many-requests':
+        return 'Too many failed attempts. Please try again later.';
       case 'email-already-in-use':
         return 'An account with this email already exists.';
       case 'weak-password':
         return 'Password is too weak.';
-      case 'invalid-email':
-        return 'Invalid email address.';
-      case 'wrong-password':
-        return 'Incorrect password.';
-      case 'user-not-found':
-        return 'No account found.';
       default:
         return e.message ?? 'Authentication error occurred.';
+    }
+  }
+
+  String _mapFirestoreError(FirebaseException e) {
+    switch (e.code) {
+      case 'permission-denied':
+        return 'You do not have permission to perform this action.';
+      case 'unavailable':
+        return 'Service is temporarily unavailable. Check your internet connection.';
+      case 'not-found':
+        return 'The requested record could not be found.';
+      case 'already-exists':
+        return 'This record already exists.';
+      case 'unauthenticated':
+        return 'Session expired. Please log in again.';
+      case 'deadline-exceeded':
+        return 'The request timed out. Please try again.';
+      case 'cancelled':
+        return 'The operation was cancelled.';
+      case 'resource-exhausted':
+        return 'Database quota exceeded. Please try again later.';
+      case 'failed-precondition':
+        return 'Operation failed due to a missing index or invalid state.';
+      case 'aborted':
+        return 'The operation was aborted due to a conflict. Please try again.';
+      case 'invalid-argument':
+        return 'Invalid data was submitted.';
+      default:
+        return e.message ?? 'A database error occurred.';
     }
   }
 }
