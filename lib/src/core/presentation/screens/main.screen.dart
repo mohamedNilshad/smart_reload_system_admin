@@ -133,6 +133,53 @@ class _MainScreenState extends State<MainScreen>
     super.dispose();
   }
 
+  Future<void> _showLogoutDialog() async {
+    bool isLogoutLoading = false;
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        return BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthLoading) {
+              if (mounted) setState(() => isLogoutLoading = state.isLogout);
+            }
+
+            if (state is AuthLogoutSuccess) {
+              if (mounted) setState(() => isLogoutLoading = false);
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                RouteConstants.loginScreen,
+                (route) => false,
+              );
+            }
+
+            if (state is AuthFailureState) {
+              if (mounted) setState(() => isLogoutLoading = false);
+              AppSnackbar.showError(context, state.message);
+            }
+          },
+          child: AlertDialog(
+            title: const Text("Confirm Logout"),
+            content: const Text("Are you sure you want to logout?"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text("Cancel"),
+              ),
+              CElevatedButton(
+                isLoading: isLogoutLoading,
+                width: 100,
+                label: "Logout",
+                onPressed: () =>
+                    dialogContext.read<AuthBloc>().add(LogoutRequested()),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isDark = HelperFunctions.isDarkMode(context);
@@ -228,6 +275,17 @@ class _MainScreenState extends State<MainScreen>
                         );
                       }
                     },
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(Sizes.md),
+                  child: ListTile(
+                    leading: const Icon(Icons.logout_rounded, color: Colors.red),
+                    title: const Text("Logout"),
+                    titleTextStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: Colors.red,
+                    ),
+                    onTap: _showLogoutDialog,
                   ),
                 ),
               ],
