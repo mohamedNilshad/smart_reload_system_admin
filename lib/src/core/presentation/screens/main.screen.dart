@@ -14,6 +14,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/notification/presentation/screens/notifications.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/screens/profile.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/screen/packages.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/report/presentation/screens/admin_dashboard.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/user/presentation/screen/users.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/wallet/presentation/screens/wallet.screen.dart';
 import 'package:window_manager/window_manager.dart';
@@ -32,7 +33,7 @@ class _MainScreenState extends State<MainScreen>
   bool isManageExpanded = false;
 
   List<Widget> screens = [
-    const TempScreen(title: "Dashboard"), //report
+    AdminDashboardScreen(), //report
     const TempScreen(
       title: "Manage",
     ), //manage(Service providers, packages, commission percentage, vendors and clients.)

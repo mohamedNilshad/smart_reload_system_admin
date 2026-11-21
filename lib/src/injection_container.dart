@@ -5,6 +5,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:smart_reload_system_admin/src/core/constants/constant.dart';
+import 'package:smart_reload_system_admin/src/core/services/admin_report_calculator.service.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/data/datasource/auth.local_datasource.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/data/datasource/auth.remote_datasource.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/data/repositories/auth.repo_impl.dart';
@@ -34,6 +35,11 @@ import 'package:smart_reload_system_admin/src/feature/profile/domain/repository/
 import 'package:smart_reload_system_admin/src/feature/profile/domain/usecase/update_password.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/domain/usecase/update_profile.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/bloc/profile.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/report/data/datasource/admin_reports.remote_datasource.dart';
+import 'package:smart_reload_system_admin/src/feature/report/data/repository/admin_reports.repo_impl.dart';
+import 'package:smart_reload_system_admin/src/feature/report/domain/repository/admin_reports.repo.dart';
+import 'package:smart_reload_system_admin/src/feature/report/domain/usecase/get_admin_report.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/report/presentation/bloc/admin_report.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/system/data/datasource/system.remote_datasource.dart';
 import 'package:smart_reload_system_admin/src/feature/system/data/repository/system.repo_impl.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/repository/system.repo.dart';
@@ -113,6 +119,9 @@ Future<void> init() async {
     () => WalletRemoteDataSourceImpl(firestore: sl(), firebaseAuth: sl()),
   );
 
+  sl.registerLazySingleton(() => AdminReportsRemoteDataSource());
+  sl.registerLazySingleton(() => const AdminReportCalculator());
+
   /// Repository
   sl.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(remoteDataSource: sl(), localDataSource: sl()),
@@ -125,6 +134,7 @@ Future<void> init() async {
   sl.registerLazySingleton<PackageRepo>(() => PackageRepoImpl(sl()));
   sl.registerLazySingleton<WalletRepo>(() => WalletRepoImpl(remoteDataSource: sl()));
   sl.registerLazySingleton<UserRepo>(() => UserRepoImpl(sl()));
+  sl.registerLazySingleton<AdminReportsRepo>(() => AdminReportsRepoImpl(remote: sl(), calculator: sl()));
 
   /// Use cases
   sl.registerLazySingleton(() => LoginUseCase(sl()));
@@ -164,6 +174,8 @@ Future<void> init() async {
   sl.registerLazySingleton(() => GetBankInfoUseCase(sl()));
   sl.registerLazySingleton(() => NewBankInfoUseCase(sl()));
   sl.registerLazySingleton(() => RemoveBankInfoUseCase(sl()));
+
+  sl.registerLazySingleton(() => GetAdminReportUseCase(sl()));
 
   /// Bloc
   sl.registerLazySingleton(
@@ -235,5 +247,7 @@ Future<void> init() async {
     ),
   );
   sl.registerLazySingleton(() => ComHistoryBloc(getHistoryUseCase: sl()));
+
+  sl.registerLazySingleton(() => AdminReportBloc(getAdminReportUseCase: sl()));
 
 }
