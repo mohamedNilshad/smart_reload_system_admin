@@ -20,6 +20,12 @@ import 'package:smart_reload_system_admin/src/feature/auth/domain/usecase/verify
 import 'package:smart_reload_system_admin/src/feature/auth/domain/usecase/watch_user_realtime.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/session.cubit.dart';
+import 'package:smart_reload_system_admin/src/feature/profile/data/datasource/profile.remote_datasource.dart';
+import 'package:smart_reload_system_admin/src/feature/profile/data/repository/profile.repo_impl.dart';
+import 'package:smart_reload_system_admin/src/feature/profile/domain/repository/profile.repo.dart';
+import 'package:smart_reload_system_admin/src/feature/profile/domain/usecase/update_password.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/profile/domain/usecase/update_profile.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/profile/presentation/bloc/profile.bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -40,11 +46,15 @@ Future<void> init() async {
         () => AuthRemoteDataSourceImpl(firebaseAuth: sl(), firestore: sl(), database: sl()),
   );
   sl.registerLazySingleton<AuthLocalDataSource>(() => AuthLocalDataSourceImpl(sl()));
+  sl.registerLazySingleton<ProfileRemoteDataSource>(() => ProfileRemoteDataSourceImpl(firebaseAuth: sl(), firestore: sl()));
 
 
   /// Repository
   sl.registerLazySingleton<AuthRepo>(
     () => AuthRepoImpl(remoteDataSource: sl(), localDataSource: sl()),
+  );
+  sl.registerLazySingleton<ProfileRepo>(
+    () => ProfileRepoImpl(remoteAuthDataSource: sl(), remoteDataSource: sl()),
   );
 
   /// Use cases
@@ -57,6 +67,9 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ReauthenticateUseCase(sl()));
   sl.registerLazySingleton(() => LogoutUseCase(sl()));
   sl.registerLazySingleton(() => VerifyEmailUseCase(sl()));
+
+  sl.registerLazySingleton(() => UpdatePasswordUseCase(sl()));
+  sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
 
   /// Bloc
   sl.registerLazySingleton(() => AuthBloc(
@@ -74,6 +87,12 @@ Future<void> init() async {
       logoutUseCase: sl(),
       updateCachedUserUseCase: sl(),
       clearCachedUserUseCase: sl(),
+    ),
+  );
+
+  sl.registerLazySingleton(() => ProfileBloc(
+      updatePasswordUseCase: sl(),
+      updateProfileUseCase: sl(),
     ),
   );
 }

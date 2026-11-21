@@ -17,7 +17,7 @@ class CCard extends StatelessWidget {
   Widget build(BuildContext context) {
     double screenWidth = HelperFunctions.screenWidth(context);
     return Container(
-      width: screenWidth/3,
+      width: screenWidth/2,
       padding: padding ?? EdgeInsets.symmetric(horizontal: Sizes.md, vertical: Sizes.lg),
       margin: margin ?? EdgeInsets.symmetric(horizontal: Sizes.sm),
       decoration: BoxDecoration(
