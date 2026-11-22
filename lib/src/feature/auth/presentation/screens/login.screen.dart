@@ -67,6 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _emailController,
                     label: 'Email',
                     hint: 'example@example.com',
+                    maxLines: 1,
                     keyboardType: TextInputType.emailAddress,
                     prefixIcon: Icons.email,
                     validator: (value) {
@@ -86,6 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         label: 'Password',
                         hint: '•••••••••',
                         isPassword: true,
+                        maxLines: 1,
                         keyboardType: TextInputType.visiblePassword,
                         prefixIcon: Icons.lock_outline,
                         validator: (value) {
