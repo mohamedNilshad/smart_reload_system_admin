@@ -13,6 +13,7 @@ import 'package:smart_reload_system_admin/src/core/router/route.constants.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.event.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/auth.state.dart';
+import 'package:window_manager/window_manager.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -27,6 +28,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   bool loading = false;
 
+
+  @override
+  void initState() {
+
+    windowManager.setPreventClose(false);
+    super.initState();
+  }
 
   @override
   void dispose() {

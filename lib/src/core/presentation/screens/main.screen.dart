@@ -82,44 +82,21 @@ class _MainScreenState extends State<MainScreen>
           await showDialog(
             context: context,
             builder: (context) {
-              return BlocListener<AuthBloc, AuthState>(
-                listener: (context, state) {
-                  if (state is AuthLoading) {
-                    if (mounted) {
-                      setState(() => isLogoutLoading = state.isLogout);
-                    }
-                  }
-
-                  if (state is AuthLogoutSuccess) {
-                    if (mounted) setState(() => isLogoutLoading = false);
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      RouteConstants.loginScreen,
-                      (route) => false,
-                    );
-                  }
-
-                  if (state is AuthFailureState) {
-                    if (mounted) setState(() => isLogoutLoading = false);
-                    AppSnackbar.showError(context, state.message);
-                  }
-                },
-                child: AlertDialog(
-                  title: const Text("Confirm Exit"),
-                  content: const Text("Are you sure you want to Logout ?"),
-                  actions: [
-                    TextButton(
-                      child: const Text("Cancel"),
-                      onPressed: () => Navigator.of(context).pop(false),
-                    ),
-                    CElevatedButton(
-                      isLoading: isLogoutLoading,
-                      width: 100,
-                      label: "Logout",
-                      onPressed: () =>
-                          context.read<AuthBloc>().add(LogoutRequested()),
-                    ),
-                  ],
-                ),
+              return AlertDialog(
+                title: const Text("Confirm Exit"),
+                content: const Text("Are you sure you want to Close ?"),
+                actions: [
+                  TextButton(
+                    child: const Text("Cancel"),
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                  CElevatedButton(
+                    isLoading: isLogoutLoading,
+                    width: 100,
+                    label: "Close",
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                ],
               );
             },
           ) ??
