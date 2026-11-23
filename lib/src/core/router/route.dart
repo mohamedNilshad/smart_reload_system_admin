@@ -8,6 +8,7 @@ import 'package:smart_reload_system_admin/src/feature/System/presentation/screen
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/login.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/auth/presentation/screens/forgot_password.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/screen/packages.screen.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/screen/commission.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/wallet/presentation/screens/bank_info.screen.dart';
 import 'package:smart_reload_system_admin/src/feature/wallet/presentation/screens/new_bank_info.screen.dart';
 
@@ -61,11 +62,11 @@ class AppRouter {
           builder: (context) => const BankInfoScreen(),
         );
 
-      // case RouteConstants.commissionScreen:
-      //   return MaterialPageRoute(
-      //     settings: const RouteSettings(name: RouteConstants.commissionScreen),
-      //     builder: (context) => const CommissionScreen(),
-      //   );
+      case RouteConstants.commissionScreen:
+        return MaterialPageRoute(
+          settings: const RouteSettings(name: RouteConstants.commissionScreen),
+          builder: (context) => const CommissionScreen(),
+        );
 
 
     }

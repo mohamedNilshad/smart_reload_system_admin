@@ -13,9 +13,9 @@ import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_c
 import 'package:smart_reload_system_admin/src/core/presentation/widgets/custom_text_field.widget.dart';
 import 'package:smart_reload_system_admin/src/core/utils/helpers/helper_functions.dart';
 import 'package:smart_reload_system_admin/src/feature/system/data/model/banner_news.model.dart';
-import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.bloc.dart';
-import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.event.dart';
-import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.state.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news/news.state.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news/news.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news/news.event.dart';
 
 class NewsBannerScreen extends StatefulWidget {
   const NewsBannerScreen({super.key});

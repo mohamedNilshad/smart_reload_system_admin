@@ -49,4 +49,23 @@ class SystemRepoImpl implements SystemRepo {
     }
   }
 
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getCommission() async {
+    try {
+      final result = await remoteDataSource.getCommission();
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> updateCommission(String adminCommission, String vendorCommission) async {
+    try {
+      final result = await remoteDataSource.updateCommission(adminCommission, vendorCommission);
+      return Right(result);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(e.message));
+    }
+  }
 }

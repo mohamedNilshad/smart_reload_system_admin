@@ -10,6 +10,9 @@ abstract class SystemRemoteDataSource {
   Future<bool> updateNews(BannerNewsModel bannerNewsModel, String? publishedId);
   Future<bool> deleteNews(String newsId);
   Future<List<BannerNewsModel>> getNewsList();
+
+  Future<Map<String, dynamic>> getCommission();
+  Future<bool> updateCommission(String adminCommission, String vendorCommission);
 }
 
 class SystemRemoteDataSourceImpl implements SystemRemoteDataSource {
@@ -126,6 +129,52 @@ class SystemRemoteDataSourceImpl implements SystemRemoteDataSource {
         stackTrace: st,
       );
       throw ServerException('Failed to load news list.');
+    }
+  }
+
+  @override
+  Future<bool> updateCommission(String adminCommission, String vendorCommission) async {
+    try {
+      await firestore.collection('system_config').doc('commissionPercentage').update({
+        'percentage': "$vendorCommission+$adminCommission",
+      });
+      return true;
+    } catch (e, st) {
+      errorLog(
+        e,
+        location: 'SystemRemoteDataSourceImpl.updateCommission',
+        stackTrace: st,
+      );
+      throw ServerException('Failed to update commission.');
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> getCommission() async {
+    try {
+      final snapshot = await firestore
+          .collection('system_config')
+          .doc('commissionPercentage')
+          .get();
+
+      if (snapshot.exists) {
+        final raw = snapshot.data()?['percentage']?.toString() ?? '';
+        final parts = raw.split('+');
+
+        return {
+          'vendorCommission': parts.isNotEmpty ? parts[0].trim() : '',
+          'adminCommission': parts.length > 1 ? parts[1].trim() : '',
+        };
+      } else {
+        throw ServerException('Commission data not found.');
+      }
+    } catch (e, st) {
+      errorLog(
+        e,
+        location: 'SystemRemoteDataSourceImpl.getCommission',
+        stackTrace: st,
+      );
+      throw ServerException('Failed to get commission.');
     }
   }
 

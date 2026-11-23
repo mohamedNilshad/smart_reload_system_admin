@@ -7,4 +7,6 @@ abstract class SystemRepo {
   Future<Either<Failure, bool>> updateNews(BannerNewsModel bannerNewsModel, {String? publishedId});
   Future<Either<Failure, bool>> deleteNews(String newsId);
   Future<Either<Failure, List<BannerNewsModel>>> getNewsList();
+  Future<Either<Failure, Map<String, dynamic>>> getCommission();
+  Future<Either<Failure, bool>> updateCommission(String adminCommission, String vendorCommission);
 }

@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/delete_news.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/get_news_list.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/update_news.usecase.dart';
-import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.event.dart';
-import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.state.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news/news.event.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news/news.state.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/add_new_news.usecase.dart';
 
 class NewsBloc extends Bloc<NewsEvent, NewsState> {

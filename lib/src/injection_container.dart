@@ -45,9 +45,12 @@ import 'package:smart_reload_system_admin/src/feature/system/data/repository/sys
 import 'package:smart_reload_system_admin/src/feature/system/domain/repository/system.repo.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/add_new_news.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/delete_news.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/get_commission.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/get_news_list.usecase.dart';
+import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/update_commission.usecase.dart';
 import 'package:smart_reload_system_admin/src/feature/system/domain/usecase/update_news.usecase.dart';
-import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/commission/commission.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news/news.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/package/data/datasource/package.remote_datasource.dart';
 import 'package:smart_reload_system_admin/src/feature/package/data/repository/package.repo_impl.dart';
 import 'package:smart_reload_system_admin/src/feature/package/domain/repository/package.repo.dart';
@@ -177,6 +180,9 @@ Future<void> init() async {
 
   sl.registerLazySingleton(() => GetAdminReportUseCase(sl()));
 
+  sl.registerLazySingleton(() => UpdateCommissionUseCase(sl()));
+  sl.registerLazySingleton(() => GetCommissionUseCase(sl()));
+
   /// Bloc
   sl.registerLazySingleton(
     () => AuthBloc(
@@ -249,5 +255,10 @@ Future<void> init() async {
   sl.registerLazySingleton(() => ComHistoryBloc(getHistoryUseCase: sl()));
 
   sl.registerLazySingleton(() => AdminReportBloc(getAdminReportUseCase: sl()));
+
+  sl.registerLazySingleton(() => CommissionBloc(
+    updateCommissionUseCase: sl(),
+    getCommissionUseCase: sl(),
+  ));
 
 }

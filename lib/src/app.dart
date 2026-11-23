@@ -11,7 +11,8 @@ import 'package:smart_reload_system_admin/src/feature/auth/presentation/bloc/ses
 import 'package:smart_reload_system_admin/src/feature/notification/presentation/bloc/notification.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/profile/presentation/bloc/profile.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/report/presentation/bloc/admin_report.bloc.dart';
-import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/commission/commission.bloc.dart';
+import 'package:smart_reload_system_admin/src/feature/system/presentation/bloc/news/news.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/package/presentation/bloc/package.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/user/presentation/bloc/user.bloc.dart';
 import 'package:smart_reload_system_admin/src/feature/wallet/presentation/bloc/bank/bank.bloc.dart';
@@ -38,6 +39,7 @@ class App extends StatelessWidget {
         BlocProvider(create: (_) => sl<ComHistoryBloc>()),
         BlocProvider(create: (_) => sl<BankBloc>()),
         BlocProvider(create: (_) => sl<AdminReportBloc>()),
+        BlocProvider(create: (_) => sl<CommissionBloc>()),
       ],
       child: MaterialApp(
         builder: (context, child) => NoInternetBanner(child: child!),
