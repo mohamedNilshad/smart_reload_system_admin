@@ -44,6 +44,7 @@ class _WalletScreenState extends State<WalletScreen> {
   double totalBalance = 0.0;
   List<ComWithdrawHistoryEntity> historyList = const [];
   bool withdrewLoading = false;
+  bool bankInfoLoading = false;
   List<BankDetailsModel> bankInfoList = [];
 
   @override
@@ -52,11 +53,12 @@ class _WalletScreenState extends State<WalletScreen> {
     context.read<WalletBloc>().add(const WalletReset());
     context.read<WalletBloc>().add(const WalletRequested());
     context.read<ComHistoryBloc>().add(const ComWithdrawHistoryRequested());
+    context.read<BankBloc>().add(const BankInfoRequested());
   }
 
-  Future<void> _showWithdrawSheet(double availableBalance, List<BankDetailsModel> items) async {
+  Future<void> _showWithdrawSheet(double availableBalance) async {
 
-    BankDetailsModel item = items.first;
+    BankDetailsModel item = bankInfoList.first;
     final navigator = Navigator.of(context);
 
     final confirmed = await AppDialog.showForm(
@@ -67,7 +69,7 @@ class _WalletScreenState extends State<WalletScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (items.isEmpty) ...{
+          if (bankInfoList.isEmpty) ...{
             Container(
               padding: const EdgeInsets.all(Sizes.sm),
               decoration: BoxDecoration(
@@ -155,7 +157,7 @@ class _WalletScreenState extends State<WalletScreen> {
         ],
       ),
       buttonText: 'Confirm withdraw',
-      onSubmit: items.isEmpty ? null : () => navigator.pop(true),
+      onSubmit: bankInfoList.isEmpty ? null : () => navigator.pop(true),
     );
 
     if (confirmed == true) {
@@ -219,19 +221,20 @@ class _WalletScreenState extends State<WalletScreen> {
 
                 BlocListener<BankBloc, BankState>(
                   listener: (context, state) {
+
                     if (state is BankLoading) {
-                      setState(() => withdrewLoading = true);
+                      setState(() => bankInfoLoading = true);
                     }
                     if (state is BankFailure) {
-                      setState(() => withdrewLoading = false);
+                      setState(() => bankInfoLoading = false);
                       AppSnackbar.showError(context, state.message);
                     }
 
                     if (state is BankSuccess) {
-                      setState(() => withdrewLoading = false);
-                      bankInfoList = state.items;
-
-                      _showWithdrawSheet(totalBalance, state.items);
+                      setState(() {
+                        bankInfoLoading = false;
+                        bankInfoList = state.items;
+                      });
                     }
                   },
                 ),
@@ -272,37 +275,40 @@ class _WalletScreenState extends State<WalletScreen> {
                           child: Row(
                             spacing: 10,
                             children: [
-                              TextButton(
-                                onPressed: (totalBalance == 0.0 || withdrewLoading || bankInfoList.isEmpty)
-                                    ? null
-                                    : () => context.read<BankBloc>().add(
-                                        const BankInfoRequested(),
-                                      ),
-                                style: TextButton.styleFrom(
-                                  foregroundColor: AppColors.white,
-                                  backgroundColor: AppColors.white.withValues(
-                                    alpha: 0.14,
+                              if(bankInfoLoading)...{
+                                CCircularProgressIndicator(color: AppColors.white, radius: 35),
+                              }else...{
+                                TextButton(
+                                  onPressed: (totalBalance == 0.0 || withdrewLoading || bankInfoList.isEmpty)
+                                      ? null
+                                      : () => _showWithdrawSheet(totalBalance),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: AppColors.white,
+                                    backgroundColor: AppColors.white.withValues(
+                                      alpha: 0.14,
+                                    ),
                                   ),
+                                  child: withdrewLoading
+                                      ? CCircularProgressIndicator(
+                                    color: AppColors.white,
+                                    radius: 10,
+                                  )
+                                      : const Text('Withdraw'),
                                 ),
-                                child: withdrewLoading
-                                    ? CCircularProgressIndicator(
-                                        color: AppColors.white,
-                                        radius: 10,
-                                      )
-                                    : const Text('Withdraw'),
-                              ),
-                              if(bankInfoList.isEmpty)...{
-                                InkWell(
-                                  onTap: (){
-                                    Navigator.pushNamed(context, RouteConstants.bankInfoScreen);
-                                  },
+                                if(bankInfoList.isEmpty)...{
+                                  InkWell(
+                                    onTap: (){
+                                      Navigator.pushNamed(context, RouteConstants.bankInfoScreen);
+                                    },
 
-                                  child: CircleAvatar(
-                                    backgroundColor: AppColors.error.withValues(alpha: 0.3),
-                                    child: Icon(Icons.question_mark_rounded, color: AppColors.white,),
-                                  ),
-                                )
-                              },
+                                    child: CircleAvatar(
+                                      backgroundColor: AppColors.error.withValues(alpha: 0.3),
+                                      child: Icon(Icons.question_mark_rounded, color: AppColors.white,),
+                                    ),
+                                  )
+                                },
+                              }
+
                             ],
                           ),
                         ),
